@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.coderthoughts.cloud</groupId>
+    <artifactId>cloud-disco-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>cloud-disco-demo-provider</artifactId>
+  <packaging>bundle</packaging>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.coderthoughts.cloud</groupId>
+      <artifactId>cloud-disco-demo-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.name}</Bundle-SymbolicName>
+            <Bundle-Activator>org.coderthoughts.cloud.demo.provider.impl.Activator</Bundle-Activator>
+            <Private-Package>org.coderthoughts.cloud.demo.provider.impl</Private-Package>  
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
+
+
