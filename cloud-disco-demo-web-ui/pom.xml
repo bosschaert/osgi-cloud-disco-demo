@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.coderthoughts.cloud</groupId>
+    <groupId>org.coderthoughts.cloud.disco.demo</groupId>
     <artifactId>cloud-disco-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
@@ -30,13 +30,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.coderthoughts.cloud</groupId>
-      <artifactId>cloud-disco-framework-service</artifactId>
+      <groupId>org.coderthoughts.cloud.infra</groupId>
+      <artifactId>cloud-infra-framework-service</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.coderthoughts.cloud</groupId>
+      <groupId>org.coderthoughts.cloud.disco.demo</groupId>
       <artifactId>cloud-disco-demo-api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
