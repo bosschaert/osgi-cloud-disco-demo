@@ -41,7 +41,11 @@ public class MyServlet extends HttpServlet {
     private void printFrameworks(PrintWriter out) {
         out.println("<H2>Frameworks in the Cloud Ecosystem</H2>");
         try {
-            for (ServiceReference ref : bundleContext.getServiceReferences(OSGiFramework.class.getName(), null)) {
+            ServiceReference[] refs = bundleContext.getServiceReferences(OSGiFramework.class.getName(), null);
+            if (refs == null)
+                return;
+
+            for (ServiceReference ref : refs) {
                 Map<String, Object> sortedProps = new TreeMap<String, Object>();
                 for (String key : ref.getPropertyKeys()) {
                     if (!key.startsWith("org."))
@@ -65,7 +69,11 @@ public class MyServlet extends HttpServlet {
         out.println("<H2>TestService instances available</H2>");
 
         try {
-            for (ServiceReference ref : bundleContext.getServiceReferences(TestService.class.getName(), null)) {
+            ServiceReference[] refs = bundleContext.getServiceReferences(TestService.class.getName(), null);
+            if (refs == null)
+                return;
+
+            for (ServiceReference ref : refs) {
                 TestService svc = (TestService) bundleContext.getService(ref);
                 out.println("TestService instance<ul>");
                 out.println("<li>invoking: " + svc.doit("Hi there"));
