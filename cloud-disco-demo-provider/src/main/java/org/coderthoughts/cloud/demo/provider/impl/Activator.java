@@ -13,7 +13,7 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        TestService dr = new TestServiceImpl();
+        TestService dr = new TestServiceImpl(context.getProperty("org.osgi.framework.uuid"));
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put("service.exported.interfaces", "*");
         props.put("service.exported.configs", "org.coderthoughts.configtype.cloud");
