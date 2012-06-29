@@ -102,11 +102,16 @@ public class MyServlet extends HttpServlet {
         out.println("<H2>TestService instances available</H2>");
 
         for (ServiceReference ref : testServicesRefs) {
-            TestService svc = (TestService) bundleContext.getService(ref);
-            out.println("TestService instance<ul>");
-            out.println("<li>invoking: " + svc.doit("Hi there"));
-            out.println("</li></ul>");
-            bundleContext.ungetService(ref);
+            try {
+                TestService svc = (TestService) bundleContext.getService(ref);
+                out.println("TestService instance<ul>");
+                out.println("<li>invoking: " + svc.doit("Hi there"));
+                out.println("</li></ul>");
+                bundleContext.ungetService(ref);
+            } catch (Exception ex) {
+                // This service is potentially remote so it might throw an exception if it
+                // disappeared before Discovery knows about it.
+            }
         }
     }
 }
