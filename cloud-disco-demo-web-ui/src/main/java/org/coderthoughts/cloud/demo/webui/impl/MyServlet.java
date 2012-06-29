@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,8 +23,10 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class MyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Collection<String> reportedProperties = Arrays.asList(
-            "org.coderthoughts.framework.ip", "org.osgi.framework.uuid"
+    private static final Collection<Pattern> reportedProperties = Arrays.asList(
+            Pattern.compile("org.coderthoughts.*"),
+            Pattern.compile("org.osgi.*"),
+            Pattern.compile("java.*")
         );
 
     private final BundleContext bundleContext;
@@ -84,10 +87,12 @@ public class MyServlet extends HttpServlet {
         for (ServiceReference ref : frameworksRefs) {
             Map<String, Object> sortedProps = new TreeMap<String, Object>();
             for (String key : ref.getPropertyKeys()) {
-                if (!reportedProperties.contains(key))
-                    // Don't display all they props to keep things tidy
-                    continue;
-                sortedProps.put(key, ref.getProperty(key));
+                for (Pattern p : reportedProperties) {
+                    if (p.matcher(key).matches()) {
+                        sortedProps.put(key, ref.getProperty(key));
+                        continue;
+                    }
+                }
             }
 
             out.println("OSGi Framework<UL>");
