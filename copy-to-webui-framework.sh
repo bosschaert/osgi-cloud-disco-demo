@@ -18,6 +18,7 @@ fi
 cp $TARGET/osgi/equinox/config-template/config.ini $TARGET/osgi/equinox/config/config.ini
 
 copy cloud-disco-demo-api
+#copy cloud-disco-demo-provider #the ui framework also contains a service provider
 copy cloud-disco-demo-web-ui
 
 echo " " >> $TARGET/osgi/equinox/config/config.ini  

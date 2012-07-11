@@ -30,6 +30,18 @@
       <version>4.2.0</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.cxf.dosgi</groupId>
+      <artifactId>cxf-dosgi-ri-dsw-cxf</artifactId>
+      <version>1.4-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.coderthoughts.cloud.infra</groupId>
+      <artifactId>cloud-infra-framework-service</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   
   <build>

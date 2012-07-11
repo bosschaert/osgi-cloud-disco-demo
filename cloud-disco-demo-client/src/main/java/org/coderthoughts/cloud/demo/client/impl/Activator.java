@@ -19,7 +19,7 @@ public class Activator implements BundleActivator {
                 Object svc = super.addingService(reference);
                 if (svc instanceof TestService) {
                     TestService dr = (TestService) svc;
-                    System.out.println("*** result: " + dr.doit("###### Invoking from a client"));
+                    System.out.println("*** result: " + dr.doit());
                 }
                 return svc;
             }

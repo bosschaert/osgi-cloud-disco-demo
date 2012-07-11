@@ -10,8 +10,7 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public String doit(String s) {
-        System.out.println("Received this message: " + s);
+    public String doit() {
         return "My Framework UUID is: " + uuid;
     }
 }
