@@ -23,7 +23,7 @@ public class Activator implements BundleActivator {
         TestService ts = new TestServiceImpl(context.getProperty("org.osgi.framework.uuid"));
         Dictionary<String, Object> tsProps = new Hashtable<String, Object>();
         tsProps.put("service.exported.interfaces", "*");
-        tsProps.put("service.exported.configs", "org.coderthoughts.configtype.cloud");
+        tsProps.put("service.exported.configs", new String [] {"org.coderthoughts.configtype.cloud", "<<nodefault>>"});
         TestServiceRSF tsControl = new TestServiceRSF(context);
         tsProps.put("org.coderthoughts.remote.service.factory", tsControl);
         tsReg = context.registerService(TestService.class.getName(), ts, tsProps);
@@ -38,7 +38,7 @@ public class Activator implements BundleActivator {
         LongRunningService lrs = new LongRunningServiceImpl();
         Dictionary<String, Object> lrsProps = new Hashtable<String, Object>();
         lrsProps.put("service.exported.interfaces", "*");
-        lrsProps.put("service.exported.configs", "org.coderthoughts.configtype.cloud");
+        lrsProps.put("service.exported.configs", new String [] {"org.coderthoughts.configtype.cloud", "<<nodefault>>"});
         RemoteServiceFactory lrsFactory = new LongRunningServiceRSF();
         lrsProps.put("org.coderthoughts.remote.service.factory", lrsFactory);
         lrsReg = context.registerService(LongRunningService.class.getName(), lrs, lrsProps);
