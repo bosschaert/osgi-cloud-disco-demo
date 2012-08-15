@@ -72,8 +72,8 @@ public class MyServlet extends HttpServlet {
         out.println("<html><head><title>Test Web UI</title></head><body>");
 
         printFrameworks(out);
-        printTestServices(out);
-        printConcurrentInvocations(out);
+        printTestServices(out, 1);
+        // printConcurrentInvocations(out);
 
         out.println("</body></html>");
         out.close();
@@ -116,10 +116,10 @@ public class MyServlet extends HttpServlet {
         out.println("</tr></table>");
     }
 
-    private void printTestServices(PrintWriter out) {
+    private void printTestServices(PrintWriter out, int invocationCount) {
         out.println("<H2>TestService invocation</H2><small><ul>");
 
-        for (int i=0; i < 5; i++) {
+        for (int i=0; i < invocationCount; i++) {
             for (ServiceReference ref : testServicesRefs) {
                 try {
                     out.println("<li>TestService ");

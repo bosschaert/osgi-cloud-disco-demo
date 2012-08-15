@@ -29,7 +29,7 @@ public class TestServiceRSF implements RemoteServiceFactory, Monitorable {
         // if that doesn't happen the same can be achieved by using a proxy.
         AtomicInteger count = getCount(clientIP);
         int amount = count.incrementAndGet();
-        if (amount > 3)
+        if (amount > 100)
             throw new InvocationsExhaustedException("Maximum invocations reached for: " + clientIP);
 
         return getService(clientIP);
