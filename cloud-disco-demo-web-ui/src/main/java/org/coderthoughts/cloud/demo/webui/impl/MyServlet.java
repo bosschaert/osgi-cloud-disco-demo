@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.coderthoughts.cloud.demo.api.LongRunningService;
 import org.coderthoughts.cloud.demo.api.TestService;
-import org.coderthoughts.cloud.framework.service.api.OSGiFramework;
+import org.coderthoughts.cloud.framework.service.api.FrameworkStatus;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -41,7 +41,7 @@ public class MyServlet extends HttpServlet {
     MyServlet(BundleContext context) {
         bundleContext = context;
 
-        openServiceTracker(context, OSGiFramework.class, frameworkRefs);
+        openServiceTracker(context, FrameworkStatus.class, frameworkRefs);
         openServiceTracker(context, TestService.class, testServicesRefs);
         openServiceTracker(context, LongRunningService.class, longRunningServiceRefs);
     }
@@ -101,8 +101,8 @@ public class MyServlet extends HttpServlet {
 
             out.println(" - Free Memory: ");
             try {
-                OSGiFramework fwk = (OSGiFramework) bundleContext.getService(ref);
-                long bytes = Long.parseLong(fwk.getFrameworkVariable(OSGiFramework.FV_AVAILABLE_MEMORY));
+                FrameworkStatus fwk = (FrameworkStatus) bundleContext.getService(ref);
+                long bytes = Long.parseLong(fwk.getFrameworkVariable(FrameworkStatus.FV_AVAILABLE_MEMORY));
                 out.println(bytes/1024l);
             } catch (Exception ex) {
                 out.println("unknown");
@@ -126,13 +126,13 @@ public class MyServlet extends HttpServlet {
                     if (ref.getProperty("service.imported") != null) {
                         out.println("(remote) ");
                         // ask the framework for its status
-                        ServiceReference[] fwrefs = bundleContext.getServiceReferences(OSGiFramework.class.getName(),
+                        ServiceReference[] fwrefs = bundleContext.getServiceReferences(FrameworkStatus.class.getName(),
                             "(endpoint.framework.uuid=" + ref.getProperty("endpoint.framework.uuid") + ")");
                         out.println(" status: ");
                         if (fwrefs != null && fwrefs.length > 0) {
-                            OSGiFramework fw = (OSGiFramework) bundleContext.getService(fwrefs[0]);
+                            FrameworkStatus fw = (FrameworkStatus) bundleContext.getService(fwrefs[0]);
                             out.println(fw.getServiceVariable((Long) ref.getProperty("endpoint.service.id"),
-                                    OSGiFramework.SV_STATUS));
+                                    FrameworkStatus.SV_STATUS));
                         } else {
                             out.println("no matching framework found");
                         }

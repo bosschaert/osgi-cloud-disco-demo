@@ -6,9 +6,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.cxf.dosgi.dsw.ClientInfo;
 import org.apache.cxf.dosgi.dsw.RemoteServiceFactory;
 import org.coderthoughts.cloud.demo.api.TestService;
-import org.coderthoughts.cloud.framework.service.api.OSGiFramework;
+import org.coderthoughts.cloud.framework.service.api.FrameworkStatus;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.monitor.Monitorable;
@@ -24,19 +25,19 @@ public class TestServiceRSF implements RemoteServiceFactory, Monitorable {
     }
 
     @Override
-    public Object getService(String clientIP, ServiceReference reference) {
+    public Object getService(ClientInfo clientInfo, ServiceReference reference) {
         // This assumes that getService/ungetService is called for every remote invocation
         // if that doesn't happen the same can be achieved by using a proxy.
-        AtomicInteger count = getCount(clientIP);
+        AtomicInteger count = getCount(clientInfo.getHostIPAddress());
         int amount = count.incrementAndGet();
         if (amount > 100)
-            throw new InvocationsExhaustedException("Maximum invocations reached for: " + clientIP);
+            throw new InvocationsExhaustedException("Maximum invocations reached for: " + clientInfo);
 
-        return getService(clientIP);
+        return getService(clientInfo.getHostIPAddress());
     }
 
     @Override
-    public void ungetService(String clientIP, ServiceReference reference, Object service) {
+    public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service) {
         // Nothing to do
     }
 
@@ -65,7 +66,7 @@ public class TestServiceRSF implements RemoteServiceFactory, Monitorable {
     public String[] getStatusVariableNames() {
         List<String> vars = new ArrayList<String>();
         for (String ip : services.keySet()) {
-            vars.add(OSGiFramework.SERVICE_STATUS_PREFIX + ip);
+            vars.add(FrameworkStatus.SERVICE_STATUS_PREFIX + ip);
         }
         return vars.toArray(new String [] {});
     }
@@ -77,12 +78,12 @@ public class TestServiceRSF implements RemoteServiceFactory, Monitorable {
 
         String status;
         if (count == null) {
-            status = OSGiFramework.SERVICE_STATUS_NOT_FOUND;
+            status = FrameworkStatus.SERVICE_STATUS_NOT_FOUND;
         } else {
             if (count.get() < 3)
-                status = OSGiFramework.SERVICE_STATUS_OK;
+                status = FrameworkStatus.SERVICE_STATUS_OK;
             else
-                status = OSGiFramework.SERVICE_STATUS_QUOTA_EXCEEDED;
+                status = FrameworkStatus.SERVICE_STATUS_QUOTA_EXCEEDED;
         }
         return new StatusVariable(var, StatusVariable.CM_SI, status);
     }
@@ -103,10 +104,10 @@ public class TestServiceRSF implements RemoteServiceFactory, Monitorable {
     }
 
     private String getIPAddress(String var) {
-        if (!var.startsWith(OSGiFramework.SERVICE_STATUS_PREFIX))
+        if (!var.startsWith(FrameworkStatus.SERVICE_STATUS_PREFIX))
             throw new IllegalArgumentException("Not a valid status variable: " + var);
 
-        String ip = var.substring(OSGiFramework.SERVICE_STATUS_PREFIX.length());
+        String ip = var.substring(FrameworkStatus.SERVICE_STATUS_PREFIX.length());
         return ip;
     }
 }

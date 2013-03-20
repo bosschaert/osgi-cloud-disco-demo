@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import org.apache.cxf.dosgi.dsw.RemoteServiceFactory;
 import org.coderthoughts.cloud.demo.api.LongRunningService;
 import org.coderthoughts.cloud.demo.api.TestService;
-import org.coderthoughts.cloud.framework.service.api.OSGiFramework;
+import org.coderthoughts.cloud.framework.service.api.FrameworkStatus;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -30,7 +30,7 @@ public class Activator implements BundleActivator {
 
         // Register the monitorable too for the TestService.
         Dictionary<String, Object> mProps = new Hashtable<String, Object>();
-        String monitorablePID = OSGiFramework.MONITORABLE_SERVICE_PID_PREFIX +
+        String monitorablePID = FrameworkStatus.MONITORABLE_SERVICE_PID_PREFIX +
                 tsReg.getReference().getProperty(Constants.SERVICE_ID);
         mProps.put(Constants.SERVICE_PID, monitorablePID);
         mReg = context.registerService(Monitorable.class.getName(), tsControl, mProps);
