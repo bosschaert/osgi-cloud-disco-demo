@@ -26,8 +26,10 @@ import org.osgi.util.tracker.ServiceTracker;
 public class MyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Collection<Pattern> reportedProperties = Arrays.asList(
-            Pattern.compile("org.coderthoughts.framework.ip"),
-            Pattern.compile("org.osgi.framework.uuid")
+            Pattern.compile(".*")
+//            Pattern.compile("org.coderthoughts.framework.ip"),
+//            Pattern.compile("org.osgi.framework.uuid")
+
 //            Pattern.compile("org.coderthoughts.*"),
 //            Pattern.compile("org.osgi.*"),
 //            Pattern.compile("java.*")
@@ -87,7 +89,7 @@ public class MyServlet extends HttpServlet {
             for (String key : ref.getPropertyKeys()) {
                 for (Pattern p : reportedProperties) {
                     if (p.matcher(key).matches()) {
-                        sortedProps.put(key, ref.getProperty(key));
+                        sortedProps.put(key, formatProperty(ref.getProperty(key)));
                         continue;
                     }
                 }
@@ -107,13 +109,24 @@ public class MyServlet extends HttpServlet {
             } catch (Exception ex) {
                 out.println("unknown");
             }
-            out.println(" (kilo bytes) <table border='1' frame='void'>");
+            out.println(" kb <table border='1' frame='void'>");
             for (String key : sortedProps.keySet()) {
                 out.println("<tr><td><small>" + key + "</small></td><td><small>" + sortedProps.get(key) + "</small></td></tr>");
             }
             out.println("</table></td>");
         }
         out.println("</tr></table>");
+    }
+
+    private String formatProperty(Object property) {
+        if (property == null)
+            return "<no value";
+
+        if (property.getClass().isArray()) {
+            return Arrays.toString((Object[])property);
+        } else {
+            return property.toString();
+        }
     }
 
     private void printTestServices(PrintWriter out, int invocationCount) {
