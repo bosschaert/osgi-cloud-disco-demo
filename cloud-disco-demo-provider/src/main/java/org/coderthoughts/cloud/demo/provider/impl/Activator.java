@@ -1,10 +1,8 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
-import org.coderthoughts.cloud.framework.service.api.FrameworkMetadataPublisher;
+import org.coderthoughts.cloud.framework.service.api.FrameworkStatusAddition;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 //    private ServiceRegistration lrsReg;
@@ -13,6 +11,8 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+        context.registerService(FrameworkStatusAddition.class.getName(), new FrameworkStatusAdditionImpl(), null);
+        /*
         ServiceTracker st = new ServiceTracker(context, FrameworkMetadataPublisher.class.getName(), null) {
             @Override
             public Object addingService(ServiceReference reference) {
@@ -25,6 +25,7 @@ public class Activator implements BundleActivator {
             }
         };
         st.open();
+        */
 
         /*
         TestService ts = new TestServiceImpl(context.getProperty("org.osgi.framework.uuid"));
