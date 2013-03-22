@@ -1,5 +1,6 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +16,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.monitor.Monitorable;
 import org.osgi.service.monitor.StatusVariable;
 
-public class TestServiceRSF implements RemoteServiceFactory, Monitorable {
+public class TestServiceRSF implements RemoteServiceFactory<TestService>, Monitorable {
     private final BundleContext bundleContext;
     private final ConcurrentMap<String, TestService> services = new ConcurrentHashMap<String, TestService>();
     private final ConcurrentMap<String, AtomicInteger> invocationCount = new ConcurrentHashMap<String, AtomicInteger>();
@@ -25,19 +26,19 @@ public class TestServiceRSF implements RemoteServiceFactory, Monitorable {
     }
 
     @Override
-    public Object getService(ClientInfo clientInfo, ServiceReference reference) {
+    public TestService getService(ClientInfo clientInfo, ServiceReference reference, Method method, Object[] args) {
         // This assumes that getService/ungetService is called for every remote invocation
         // if that doesn't happen the same can be achieved by using a proxy.
         AtomicInteger count = getCount(clientInfo.getHostIPAddress());
         int amount = count.incrementAndGet();
-        if (amount > 100)
+        if (amount > 3)
             throw new InvocationsExhaustedException("Maximum invocations reached for: " + clientInfo);
 
         return getService(clientInfo.getHostIPAddress());
     }
 
     @Override
-    public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service) {
+    public void ungetService(ClientInfo clientIP, ServiceReference reference, TestService service, Method method, Object[] args) {
         // Nothing to do
     }
 

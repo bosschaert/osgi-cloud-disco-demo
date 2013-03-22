@@ -1,5 +1,6 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -11,7 +12,7 @@ public class LongRunningServiceRSF implements RemoteServiceFactory {
     ConcurrentMap<String, Object> activeClients = new ConcurrentHashMap<String, Object>();
 
     @Override
-    public Object getService(ClientInfo clientIP, ServiceReference reference) {
+    public Object getService(ClientInfo clientIP, ServiceReference reference, Method method, Object[] args) {
         if (activeClients.putIfAbsent(clientIP.getHostIPAddress(), Boolean.TRUE) != null)
             throw new RuntimeException("Only 1 concurrent invocation allowed per client.");
 
@@ -19,7 +20,7 @@ public class LongRunningServiceRSF implements RemoteServiceFactory {
     }
 
     @Override
-    public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service) {
+    public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service, Method method, Object[] args) {
         activeClients.remove(clientIP);
     }
 }
