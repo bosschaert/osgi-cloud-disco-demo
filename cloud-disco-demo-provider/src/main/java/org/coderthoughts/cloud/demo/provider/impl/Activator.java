@@ -1,5 +1,8 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.coderthoughts.cloud.framework.service.api.FrameworkStatusAddition;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -11,7 +14,10 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        context.registerService(FrameworkStatusAddition.class.getName(), new FrameworkStatusAdditionImpl(), null);
+        Dictionary<String, Object> props = new Hashtable<String, Object>();
+        props.put(FrameworkStatusAddition.ADD_PROPERTIES_KEY, new String [] {"org.coderthoughts.my-application.role"});
+        props.put("org.coderthoughts.my-application.role", "data-store-image");
+        context.registerService(FrameworkStatusAddition.class.getName(), new FrameworkStatusAdditionImpl(), props);
         /*
         ServiceTracker st = new ServiceTracker(context, FrameworkMetadataPublisher.class.getName(), null) {
             @Override
