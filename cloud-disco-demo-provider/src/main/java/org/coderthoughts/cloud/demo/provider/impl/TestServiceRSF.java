@@ -1,8 +1,6 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,19 +8,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.cxf.dosgi.dsw.ClientInfo;
 import org.apache.cxf.dosgi.dsw.RemoteServiceFactory;
 import org.coderthoughts.cloud.demo.api.TestService;
-import org.coderthoughts.cloud.framework.service.api.FrameworkStatus;
+import org.coderthoughts.cloud.framework.service.api.FrameworkStatusAddition;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.monitor.Monitorable;
-import org.osgi.service.monitor.StatusVariable;
 
-public class TestServiceRSF implements RemoteServiceFactory<TestService>, Monitorable {
+public class TestServiceRSF implements RemoteServiceFactory<TestService>, FrameworkStatusAddition {
+    private static final int MAX_INVOCATIONS = 5;
     private final BundleContext bundleContext;
     private final ConcurrentMap<String, TestService> services = new ConcurrentHashMap<String, TestService>();
     private final ConcurrentMap<String, AtomicInteger> invocationCount = new ConcurrentHashMap<String, AtomicInteger>();
+    private long serviceID;
 
     public TestServiceRSF(BundleContext bc) {
         bundleContext = bc;
+    }
+
+    void setServiceID(long id) {
+        serviceID = id;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class TestServiceRSF implements RemoteServiceFactory<TestService>, Monito
         // if that doesn't happen the same can be achieved by using a proxy.
         AtomicInteger count = getCount(clientInfo.getHostIPAddress());
         int amount = count.incrementAndGet();
-        if (amount > 3)
+        if (amount > MAX_INVOCATIONS)
             throw new InvocationsExhaustedException("Maximum invocations reached for: " + clientInfo);
 
         return getService(clientInfo.getHostIPAddress());
@@ -62,53 +64,20 @@ public class TestServiceRSF implements RemoteServiceFactory<TestService>, Monito
         }
     }
 
-    // Monitor Admin API
     @Override
-    public String[] getStatusVariableNames() {
-        List<String> vars = new ArrayList<String>();
-        for (String ip : services.keySet()) {
-            vars.add(FrameworkStatus.SERVICE_STATUS_PREFIX + ip);
+    public String getFrameworkVariable(String name, ClientInfo client) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getServiceVariable(long id, String name, ClientInfo client) {
+        if (serviceID != id) {
+            throw new IllegalArgumentException("Service ID: " + id);
         }
-        return vars.toArray(new String [] {});
-    }
-
-    @Override
-    public StatusVariable getStatusVariable(String var) throws IllegalArgumentException {
-        String ip = getIPAddress(var);
-        AtomicInteger count = invocationCount.get(ip);
-
-        String status;
-        if (count == null) {
-            status = FrameworkStatus.SERVICE_STATUS_NOT_FOUND;
-        } else {
-            if (count.get() < 3)
-                status = FrameworkStatus.SERVICE_STATUS_OK;
-            else
-                status = FrameworkStatus.SERVICE_STATUS_QUOTA_EXCEEDED;
+        if ("remaining.invocations".equals(name)) {
+            AtomicInteger count = getCount(client.getHostIPAddress());
+            return "" + (MAX_INVOCATIONS - count.get());
         }
-        return new StatusVariable(var, StatusVariable.CM_SI, status);
-    }
-
-    @Override
-    public boolean notifiesOnChange(String id) throws IllegalArgumentException {
-        return false;
-    }
-
-    @Override
-    public boolean resetStatusVariable(String var) throws IllegalArgumentException {
-        return invocationCount.remove(getIPAddress(var)) != null;
-    }
-
-    @Override
-    public String getDescription(String var) throws IllegalArgumentException {
-        return "The status of the " + TestService.class.getName() + " service for client " + getIPAddress(var);
-    }
-
-    private String getIPAddress(String var) {
-        if (!var.startsWith(FrameworkStatus.SERVICE_STATUS_PREFIX))
-            throw new IllegalArgumentException("Not a valid status variable: " + var);
-
-        String ip = var.substring(FrameworkStatus.SERVICE_STATUS_PREFIX.length());
-        return ip;
+        throw new IllegalArgumentException(name);
     }
 }
