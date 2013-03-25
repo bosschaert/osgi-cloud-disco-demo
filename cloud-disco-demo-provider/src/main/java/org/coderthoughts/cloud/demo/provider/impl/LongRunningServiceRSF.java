@@ -20,7 +20,7 @@ public class LongRunningServiceRSF implements RemoteServiceFactory {
     }
 
     @Override
-    public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service, Method method, Object[] args) {
+    public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service, Method method, Object[] args, Object rv) {
         activeClients.remove(clientIP);
     }
 }

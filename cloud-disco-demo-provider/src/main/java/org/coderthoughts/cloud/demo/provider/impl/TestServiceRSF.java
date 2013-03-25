@@ -40,7 +40,7 @@ public class TestServiceRSF implements RemoteServiceFactory<TestService>, Framew
     }
 
     @Override
-    public void ungetService(ClientInfo clientIP, ServiceReference reference, TestService service, Method method, Object[] args) {
+    public void ungetService(ClientInfo clientIP, ServiceReference reference, TestService service, Method method, Object[] args, Object rv) {
         // Nothing to do
     }
 
