@@ -85,6 +85,7 @@ public class MyServlet extends HttpServlet {
         out.println("<H2>Frameworks in the Cloud Ecosystem</H2><table border='0'><tr>");
 
         for (ServiceReference ref : frameworkRefs) {
+            FrameworkStatus fwk = (FrameworkStatus) bundleContext.getService(ref);
             Map<String, Object> sortedProps = new TreeMap<String, Object>();
             for (String key : ref.getPropertyKeys()) {
                 for (Pattern p : reportedProperties) {
@@ -103,7 +104,6 @@ public class MyServlet extends HttpServlet {
 
             out.println(" - Free Memory: ");
             try {
-                FrameworkStatus fwk = (FrameworkStatus) bundleContext.getService(ref);
                 long bytes = Long.parseLong(fwk.getFrameworkVariable(FrameworkStatus.FV_AVAILABLE_MEMORY));
                 out.println(bytes/1024l);
             } catch (Exception ex) {
@@ -113,7 +113,9 @@ public class MyServlet extends HttpServlet {
             for (String key : sortedProps.keySet()) {
                 out.println("<tr><td><small>" + key + "</small></td><td><small>" + sortedProps.get(key) + "</small></td></tr>");
             }
-            out.println("</table></td>");
+            out.println("</table>");
+            out.println("<table border='0'><tr><td>Framework variables: " + Arrays.toString(fwk.listFrameworkVariableNames()) + "</td></tr></table>" +
+            		"</td>");
         }
         out.println("</tr></table>");
     }
