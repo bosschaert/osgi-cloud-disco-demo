@@ -8,11 +8,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.cxf.dosgi.dsw.ClientInfo;
 import org.apache.cxf.dosgi.dsw.RemoteServiceFactory;
 import org.coderthoughts.cloud.demo.api.TestService;
-import org.coderthoughts.cloud.framework.service.api.FrameworkStatusAddition;
+import org.coderthoughts.cloud.framework.service.api.FrameworkNodeAddition;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class TestServiceRSF implements RemoteServiceFactory<TestService>, FrameworkStatusAddition {
+public class TestServiceRSF implements RemoteServiceFactory<TestService>, FrameworkNodeAddition {
     private static final int MAX_INVOCATIONS = 5;
     private final BundleContext bundleContext;
     private final ConcurrentMap<String, TestService> services = new ConcurrentHashMap<String, TestService>();
@@ -69,6 +69,7 @@ public class TestServiceRSF implements RemoteServiceFactory<TestService>, Framew
         throw new UnsupportedOperationException();
     }
 
+    /*
     @Override
     public String getServiceVariable(long id, String name, ClientInfo client) {
         if (serviceID != id) {
@@ -80,4 +81,5 @@ public class TestServiceRSF implements RemoteServiceFactory<TestService>, Framew
         }
         throw new IllegalArgumentException(name);
     }
+    */
 }

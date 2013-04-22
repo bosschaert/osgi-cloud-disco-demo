@@ -114,7 +114,8 @@ public class MyServlet extends HttpServlet {
                 out.println("<tr><td><small>" + key + "</small></td><td><small>" + sortedProps.get(key) + "</small></td></tr>");
             }
             out.println("</table>");
-            out.println("<table border='0'><tr><td>Framework variables: " + Arrays.toString(fwk.listFrameworkVariableNames()) + "</td></tr></table>" +
+            out.println("<table border='0'><tr><td>Framework variables: " + Arrays.toString(fwk.listFrameworkVariableNames()) + "</td></tr>" +
+            		"<tr><td>Map: " + fwk.getFrameworkVariables(".*") + "</td></tr></table>" +
             		"</td>");
         }
         out.println("</tr></table>");
