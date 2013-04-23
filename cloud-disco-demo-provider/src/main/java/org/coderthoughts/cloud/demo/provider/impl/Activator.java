@@ -1,6 +1,5 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -26,11 +25,12 @@ public class Activator implements BundleActivator {
         Long tsID = (Long) tsreg.getReference().getProperty(Constants.SERVICE_ID);
         ts.setServiceID(tsID);
 
+        /*
         Dictionary<String, Object> fsProps = new Hashtable<String, Object>();
         fsProps.put(FrameworkNodeAddition.SERVICE_VARIABLES_KEY, Collections.singleton("remaining.invocations"));
         fsProps.put(FrameworkNodeAddition.SERVICE_IDS_KEY, tsID);
         context.registerService(FrameworkNodeAddition.class.getName(), ts, fsProps);
-
+        */
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(FrameworkNodeAddition.ADD_PROPERTIES_KEY, new String [] {"org.coderthoughts.my-application.role"});
         props.put("org.coderthoughts.my-application.role", "data-store-image");
