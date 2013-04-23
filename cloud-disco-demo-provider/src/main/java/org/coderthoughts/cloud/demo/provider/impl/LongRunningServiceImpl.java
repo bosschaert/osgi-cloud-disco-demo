@@ -11,6 +11,6 @@ public class LongRunningServiceImpl implements LongRunningService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return 42;
+        return 51;
     }
 }

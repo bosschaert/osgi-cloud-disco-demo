@@ -76,7 +76,7 @@ public class MyServlet extends HttpServlet {
 
         printFrameworks(out);
         printTestServices(out, 1);
-        // printConcurrentInvocations(out);
+        printConcurrentInvocations(out);
 
         out.println("</body></html>");
         out.close();
@@ -153,25 +153,6 @@ public class MyServlet extends HttpServlet {
                         out.println("</li>");
                     }
                     out.println("<li>TestService ");
-
-
-
-                    /*
-                    if (ref.getProperty("service.imported") != null) {
-                        out.println("(remote) ");
-                        // ask the framework for its status
-                        ServiceReference[] fwrefs = bundleContext.getServiceReferences(FrameworkNodeStatus.class.getName(),
-                            "(endpoint.framework.uuid=" + ref.getProperty("endpoint.framework.uuid") + ")");
-                        out.println(" status: ");
-                        if (fwrefs != null && fwrefs.length > 0) {
-                            FrameworkNodeStatus fw = (FrameworkNodeStatus) bundleContext.getService(fwrefs[0]);
-                            out.println(fw.getServiceVariable((Long) ref.getProperty("endpoint.service.id"),
-                                    FrameworkNodeStatus.SV_STATUS));
-                        } else {
-                            out.println("no matching framework found");
-                        }
-                    }
-                    */
 
                     TestService svc = (TestService) bundleContext.getService(ref);
                     out.println("Result: " + svc.doit() + "</li>");

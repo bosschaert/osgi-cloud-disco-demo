@@ -1,7 +1,6 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,21 +19,13 @@ public class TestServiceInvocationHandler implements RemoteServiceInvocationHand
     private final BundleContext bundleContext;
     private final ConcurrentMap<String, TestService> services = new ConcurrentHashMap<String, TestService>();
     private final ConcurrentMap<String, AtomicInteger> invocationCount = new ConcurrentHashMap<String, AtomicInteger>();
-    // private long serviceID;
 
     public TestServiceInvocationHandler(BundleContext bc) {
         bundleContext = bc;
     }
 
-    /*
-    void setServiceID(long id) {
-        serviceID = id;
-    }
-    */
-
     @Override
     public Object invoke(ClientContext client, ServiceReference reference, Method method, Object[] args) {
-        System.out.println("$$$ About to invoke: " + client + "@" + reference + "@" + method + "@" + Arrays.toString(args));
         AtomicInteger count = getCount(client.getHostIPAddress());
         int amount = count.incrementAndGet();
         if (amount > MAX_INVOCATIONS)
@@ -76,24 +67,6 @@ public class TestServiceInvocationHandler implements RemoteServiceInvocationHand
         return m;
     }
 
-    /*
-    @Override
-    public TestService getService(ClientInfo clientInfo, ServiceReference reference, Method method, Object[] args) {
-        // This assumes that getService/ungetService is called for every remote invocation
-        // if that doesn't happen the same can be achieved by using a proxy.
-        AtomicInteger count = getCount(clientInfo.getHostIPAddress());
-        int amount = count.incrementAndGet();
-        if (amount > MAX_INVOCATIONS)
-            throw new InvocationsExhaustedException("Maximum invocations reached for: " + clientInfo);
-
-        return getService(clientInfo.getHostIPAddress());
-    }
-
-    @Override
-    public void ungetService(ClientInfo clientIP, ServiceReference reference, TestService service, Method method, Object[] args, Object rv) {
-        // Nothing to do
-    } */
-
     private TestService getService(String ipAddr) {
         TestService newSvc = new TestServiceImpl(bundleContext.getProperty("org.osgi.framework.uuid"));
         TestService oldSvc = services.putIfAbsent(ipAddr, newSvc);
@@ -113,23 +86,4 @@ public class TestServiceInvocationHandler implements RemoteServiceInvocationHand
             super(reason);
         }
     }
-
-    /*
-    @Override
-    public String getFrameworkVariable(String name, ClientInfo client) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getServiceVariable(long id, String name, ClientInfo client) {
-        if (serviceID != id) {
-            throw new IllegalArgumentException("Service ID: " + id);
-        }
-        if ("remaining.invocations".equals(name)) {
-            AtomicInteger count = getCount(client.getHostIPAddress());
-            return "" + (MAX_INVOCATIONS - count.get());
-        }
-        throw new IllegalArgumentException(name);
-    }
-    */
 }

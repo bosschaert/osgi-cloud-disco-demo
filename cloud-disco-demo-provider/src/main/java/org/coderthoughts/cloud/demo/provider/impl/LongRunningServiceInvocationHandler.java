@@ -6,28 +6,23 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cxf.dosgi.dsw.ClientContext;
 import org.apache.cxf.dosgi.dsw.RemoteServiceInvocationHandler;
+import org.coderthoughts.cloud.demo.api.LongRunningService;
 import org.osgi.framework.ServiceReference;
 
-public class LongRunningServiceRSF implements RemoteServiceInvocationHandler {
+public class LongRunningServiceInvocationHandler implements RemoteServiceInvocationHandler<LongRunningService> {
     ConcurrentMap<String, Object> activeClients = new ConcurrentHashMap<String, Object>();
 
     @Override
     public Object invoke(ClientContext client, ServiceReference reference, Method method, Object[] args) {
-        return null;
-    }
-
-    /**
-    @Override
-    public Object getService(ClientInfo clientIP, ServiceReference reference, Method method, Object[] args) {
-        if (activeClients.putIfAbsent(clientIP.getHostIPAddress(), Boolean.TRUE) != null)
+        if (activeClients.putIfAbsent(client.getHostIPAddress(), Boolean.TRUE) != null)
             throw new RuntimeException("Only 1 concurrent invocation allowed per client.");
 
-        return new LongRunningServiceImpl();
+        try {
+            return method.invoke(new LongRunningServiceImpl(), args);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            activeClients.remove(client.getHostIPAddress());
+        }
     }
-
-    @Override
-    public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service, Method method, Object[] args, Object rv) {
-        activeClients.remove(clientIP);
-    }
-    **/
 }
