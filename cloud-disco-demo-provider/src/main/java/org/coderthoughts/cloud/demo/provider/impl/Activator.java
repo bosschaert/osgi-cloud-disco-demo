@@ -3,7 +3,7 @@ package org.coderthoughts.cloud.demo.provider.impl;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.apache.cxf.dosgi.dsw.RemoteServiceFactory;
+import org.apache.cxf.dosgi.dsw.RemoteServiceInvocationHandler;
 import org.coderthoughts.cloud.demo.api.TestService;
 import org.coderthoughts.cloud.framework.service.api.CloudConstants;
 import org.coderthoughts.cloud.framework.service.api.FrameworkNodeAddition;
@@ -20,7 +20,7 @@ public class Activator implements BundleActivator {
         tsProps.put("service.exported.interfaces", "*");
         tsProps.put("service.exported.configs", new String [] {CloudConstants.CLOUD_CONFIGURATION_TYPE, "<<nodefault>>"});
         tsProps.put("service.exported.type", TestService.class);
-        ServiceRegistration tsreg = context.registerService(RemoteServiceFactory.class.getName(), ts, tsProps);
+        ServiceRegistration tsreg = context.registerService(RemoteServiceInvocationHandler.class.getName(), ts, tsProps);
 
         Long tsID = (Long) tsreg.getReference().getProperty(Constants.SERVICE_ID);
         ts.setServiceID(tsID);

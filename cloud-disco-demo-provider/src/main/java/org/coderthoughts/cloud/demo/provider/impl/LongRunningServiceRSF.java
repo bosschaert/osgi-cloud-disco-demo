@@ -5,12 +5,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cxf.dosgi.dsw.ClientInfo;
-import org.apache.cxf.dosgi.dsw.RemoteServiceFactory;
+import org.apache.cxf.dosgi.dsw.RemoteServiceInvocationHandler;
 import org.osgi.framework.ServiceReference;
 
-public class LongRunningServiceRSF implements RemoteServiceFactory {
+public class LongRunningServiceRSF implements RemoteServiceInvocationHandler {
     ConcurrentMap<String, Object> activeClients = new ConcurrentHashMap<String, Object>();
 
+    @Override
+    public Object invoke(ClientInfo client, ServiceReference reference, Method method, Object[] args) {
+        return null;
+    }
+
+    /**
     @Override
     public Object getService(ClientInfo clientIP, ServiceReference reference, Method method, Object[] args) {
         if (activeClients.putIfAbsent(clientIP.getHostIPAddress(), Boolean.TRUE) != null)
@@ -23,4 +29,5 @@ public class LongRunningServiceRSF implements RemoteServiceFactory {
     public void ungetService(ClientInfo clientIP, ServiceReference reference, Object service, Method method, Object[] args, Object rv) {
         activeClients.remove(clientIP);
     }
+    **/
 }

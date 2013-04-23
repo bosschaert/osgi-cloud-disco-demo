@@ -6,13 +6,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.cxf.dosgi.dsw.ClientInfo;
-import org.apache.cxf.dosgi.dsw.RemoteServiceFactory;
+import org.apache.cxf.dosgi.dsw.RemoteServiceInvocationHandler;
 import org.coderthoughts.cloud.demo.api.TestService;
 import org.coderthoughts.cloud.framework.service.api.FrameworkNodeAddition;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class TestServiceRSF implements RemoteServiceFactory<TestService>, FrameworkNodeAddition {
+public class TestServiceRSF implements RemoteServiceInvocationHandler<TestService>, FrameworkNodeAddition {
     private static final int MAX_INVOCATIONS = 5;
     private final BundleContext bundleContext;
     private final ConcurrentMap<String, TestService> services = new ConcurrentHashMap<String, TestService>();
@@ -28,6 +28,12 @@ public class TestServiceRSF implements RemoteServiceFactory<TestService>, Framew
     }
 
     @Override
+    public Object invoke(ClientInfo client, ServiceReference reference, Method method, Object[] args) {
+        return null;
+    }
+
+    /*
+    @Override
     public TestService getService(ClientInfo clientInfo, ServiceReference reference, Method method, Object[] args) {
         // This assumes that getService/ungetService is called for every remote invocation
         // if that doesn't happen the same can be achieved by using a proxy.
@@ -42,7 +48,7 @@ public class TestServiceRSF implements RemoteServiceFactory<TestService>, Framew
     @Override
     public void ungetService(ClientInfo clientIP, ServiceReference reference, TestService service, Method method, Object[] args, Object rv) {
         // Nothing to do
-    }
+    } */
 
     private TestService getService(String ipAddr) {
         TestService newSvc = new TestServiceImpl(bundleContext.getProperty("org.osgi.framework.uuid"));
