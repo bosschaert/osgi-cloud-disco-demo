@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.cxf.dosgi.dsw.RemoteServiceMetadataHandler;
+import org.apache.cxf.dosgi.dsw.RemoteServiceMetadataProvider;
 import org.coderthoughts.cloud.demo.api.LongRunningService;
 import org.coderthoughts.cloud.demo.api.TestService;
 import org.coderthoughts.cloud.framework.service.api.FrameworkNodeStatus;
@@ -140,12 +140,22 @@ public class MyServlet extends HttpServlet {
             for (ServiceReference ref : testServicesRefs) {
                 try {
                     Object mdh = ref.getProperty("service.imported.metadata");
-                    if (mdh instanceof RemoteServiceMetadataHandler) {
+                    if (mdh instanceof RemoteServiceMetadataProvider) {
+                        RemoteServiceMetadataProvider handler = (RemoteServiceMetadataProvider) mdh;
                         out.println("<li>Service Variables: " );
-                        out.println(Arrays.toString(((RemoteServiceMetadataHandler) mdh).listServiceVariablesNames()));
+                        out.println(Arrays.toString(handler.listServiceVariablesNames()));
+                        out.println("</li>");
+                        out.println("<li>remaining.invocations: " );
+                        out.println(handler.getServiceVariable("remaining.invocations"));
+                        out.println("</li>");
+                        out.println("<li>all service variables: " );
+                        out.println(handler.getServiceVariables(".*"));
                         out.println("</li>");
                     }
                     out.println("<li>TestService ");
+
+
+
                     /*
                     if (ref.getProperty("service.imported") != null) {
                         out.println("(remote) ");
