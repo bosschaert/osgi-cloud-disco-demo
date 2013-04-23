@@ -1,6 +1,7 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,28 +9,40 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.cxf.dosgi.dsw.ClientInfo;
 import org.apache.cxf.dosgi.dsw.RemoteServiceInvocationHandler;
 import org.coderthoughts.cloud.demo.api.TestService;
-import org.coderthoughts.cloud.framework.service.api.FrameworkNodeAddition;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class TestServiceRSF implements RemoteServiceInvocationHandler<TestService>, FrameworkNodeAddition {
+public class TestServiceInvocationHandler implements RemoteServiceInvocationHandler<TestService> { //, FrameworkNodeAddition {
     private static final int MAX_INVOCATIONS = 5;
     private final BundleContext bundleContext;
     private final ConcurrentMap<String, TestService> services = new ConcurrentHashMap<String, TestService>();
     private final ConcurrentMap<String, AtomicInteger> invocationCount = new ConcurrentHashMap<String, AtomicInteger>();
-    private long serviceID;
+    // private long serviceID;
 
-    public TestServiceRSF(BundleContext bc) {
+    public TestServiceInvocationHandler(BundleContext bc) {
         bundleContext = bc;
     }
 
+    /*
     void setServiceID(long id) {
         serviceID = id;
     }
+    */
 
     @Override
     public Object invoke(ClientInfo client, ServiceReference reference, Method method, Object[] args) {
-        return null;
+        System.out.println("$$$ About to invoke: " + client + "@" + reference + "@" + method + "@" + Arrays.toString(args));
+        AtomicInteger count = getCount(client.getHostIPAddress());
+        int amount = count.incrementAndGet();
+        if (amount > MAX_INVOCATIONS)
+            throw new InvocationsExhaustedException("Maximum invocations reached for: " + client);
+
+        TestService svc = getService(client.getHostIPAddress());
+        try {
+            return method.invoke(svc, args);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*
@@ -70,12 +83,12 @@ public class TestServiceRSF implements RemoteServiceInvocationHandler<TestServic
         }
     }
 
+    /*
     @Override
     public String getFrameworkVariable(String name, ClientInfo client) {
         throw new UnsupportedOperationException();
     }
 
-    /*
     @Override
     public String getServiceVariable(long id, String name, ClientInfo client) {
         if (serviceID != id) {
