@@ -1,8 +1,6 @@
 package org.coderthoughts.cloud.demo.provider.impl;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,19 +50,6 @@ public class TestServiceInvocationHandler implements RemoteServiceInvocationHand
         }
 
         throw new IllegalArgumentException(name);
-    }
-
-    @Override
-    public Map<String, String> getServiceVariables(ClientContext client, String... filter) {
-        Map<String, String> m = new HashMap<String, String>();
-        for (String var : listServiceVariablesNames(client)) {
-            try {
-                m.put(var, getServiceVariable(client, var));
-            } catch (Throwable th) {
-                m.put(var, th.getMessage());
-            }
-        }
-        return m;
     }
 
     private TestService getService(String ipAddr) {
