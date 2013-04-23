@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.cxf.dosgi.dsw.RemoteServiceMetadataHandler;
 import org.coderthoughts.cloud.demo.api.LongRunningService;
 import org.coderthoughts.cloud.demo.api.TestService;
 import org.coderthoughts.cloud.framework.service.api.FrameworkNodeStatus;
@@ -138,6 +139,12 @@ public class MyServlet extends HttpServlet {
         for (int i=0; i < invocationCount; i++) {
             for (ServiceReference ref : testServicesRefs) {
                 try {
+                    Object mdh = ref.getProperty("service.imported.metadata");
+                    if (mdh instanceof RemoteServiceMetadataHandler) {
+                        out.println("<li>Service Variables: " );
+                        out.println(Arrays.toString(((RemoteServiceMetadataHandler) mdh).listServiceVariablesNames()));
+                        out.println("</li>");
+                    }
                     out.println("<li>TestService ");
                     /*
                     if (ref.getProperty("service.imported") != null) {

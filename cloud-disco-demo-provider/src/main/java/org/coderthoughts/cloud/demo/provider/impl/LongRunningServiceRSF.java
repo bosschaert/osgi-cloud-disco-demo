@@ -16,6 +16,17 @@ public class LongRunningServiceRSF implements RemoteServiceInvocationHandler {
         return null;
     }
 
+    // TODO in a separate interface is better I think
+    @Override
+    public String[] listServiceVariablesNames(ClientInfo client) {
+        return new String [] {};
+    }
+
+    @Override
+    public String getServiceVariable(ClientInfo client, String name) {
+        return null;
+    }
+
     /**
     @Override
     public Object getService(ClientInfo clientIP, ServiceReference reference, Method method, Object[] args) {
