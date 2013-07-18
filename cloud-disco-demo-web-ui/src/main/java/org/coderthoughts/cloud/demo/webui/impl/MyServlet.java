@@ -143,13 +143,13 @@ public class MyServlet extends HttpServlet {
                     if (mdh instanceof RemoteServiceMetadataProvider) {
                         RemoteServiceMetadataProvider handler = (RemoteServiceMetadataProvider) mdh;
                         out.println("<li>Service Variables: " );
-                        out.println(Arrays.toString(handler.listServiceVariablesNames()));
+                        out.println(Arrays.toString(handler.listVariablesNames()));
                         out.println("</li>");
                         out.println("<li>remaining.invocations: " );
-                        out.println(handler.getServiceVariable("remaining.invocations"));
+                        out.println(handler.getVariable("remaining.invocations"));
                         out.println("</li>");
                         out.println("<li>all service variables: " );
-                        out.println(handler.getServiceVariables(".*"));
+                        out.println(handler.getVariables(".*"));
                         out.println("</li>");
                     }
                     out.println("<li>TestService ");

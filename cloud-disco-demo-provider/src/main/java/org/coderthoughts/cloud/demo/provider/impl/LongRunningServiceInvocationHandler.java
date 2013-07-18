@@ -13,14 +13,12 @@ public class LongRunningServiceInvocationHandler implements RemoteServiceInvocat
     ConcurrentMap<String, Object> activeClients = new ConcurrentHashMap<String, Object>();
 
     @Override
-    public Object invoke(ClientContext client, ServiceReference reference, Method method, Object[] args) {
+    public Object invoke(ClientContext client, ServiceReference reference, Method method, Object[] args) throws Exception {
         if (activeClients.putIfAbsent(client.getHostIPAddress(), Boolean.TRUE) != null)
             throw new RuntimeException("Only 1 concurrent invocation allowed per client.");
 
         try {
             return method.invoke(new LongRunningServiceImpl(), args);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         } finally {
             activeClients.remove(client.getHostIPAddress());
         }

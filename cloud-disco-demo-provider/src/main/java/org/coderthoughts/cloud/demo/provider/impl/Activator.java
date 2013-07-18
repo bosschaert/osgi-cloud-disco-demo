@@ -31,7 +31,7 @@ public class Activator implements BundleActivator {
         props.put(FrameworkNodeAddition.ADD_PROPERTIES_KEY, new String [] {"org.coderthoughts.my-application.role"});
         props.put("org.coderthoughts.my-application.role", "data-store-image");
         props.put(FrameworkNodeAddition.ADD_VARIABLES_KEY, "network.load");
-        context.registerService(FrameworkNodeAddition.class.getName(), new FrameworkStatusAdditionImpl(), props);
+        context.registerService(FrameworkNodeAddition.class.getName(), new FrameworkNodeAdditionImpl(), props);
     }
 
     @Override

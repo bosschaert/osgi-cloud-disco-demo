@@ -38,7 +38,7 @@ public class TestServiceInvocationHandler implements RemoteServiceInvocationHand
     }
 
     @Override
-    public String[] listServiceVariablesNames(ClientContext client) {
+    public String[] listServiceVariableNames(ClientContext client) {
         return new String [] {"remaining.invocations"};
     }
 
