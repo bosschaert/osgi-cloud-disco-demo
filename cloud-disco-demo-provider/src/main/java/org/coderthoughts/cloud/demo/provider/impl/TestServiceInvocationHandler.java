@@ -15,17 +15,20 @@ import org.osgi.framework.ServiceReference;
 public class TestServiceInvocationHandler implements RemoteServiceInvocationHandler<TestService>, RemoteServiceMetadataHandler {
     private static final int MAX_INVOCATIONS = 5;
     private final BundleContext bundleContext;
+    private final MyServiceResourceMonitor resourceMonitor;
     private final ConcurrentMap<String, TestService> services = new ConcurrentHashMap<String, TestService>();
     private final ConcurrentMap<String, AtomicInteger> invocationCount = new ConcurrentHashMap<String, AtomicInteger>();
 
-    public TestServiceInvocationHandler(BundleContext bc) {
+    public TestServiceInvocationHandler(BundleContext bc, MyServiceResourceMonitor monitor) {
         bundleContext = bc;
+        resourceMonitor = monitor;
     }
 
     @Override
     public Object invoke(ClientContext client, ServiceReference reference, Method method, Object[] args) {
         AtomicInteger count = getCount(client.getHostIPAddress());
         int amount = count.incrementAndGet();
+        resourceMonitor.updateUsage(amount);
         if (amount > MAX_INVOCATIONS)
             throw new InvocationsExhaustedException("Maximum invocations reached for: " + client);
 
