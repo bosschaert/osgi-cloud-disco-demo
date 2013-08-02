@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.cxf.dosgi.dsw.RemoteServiceMetadata;
 import org.apache.cxf.dosgi.dsw.RemoteServiceMetadataProvider;
 import org.coderthoughts.cloud.demo.api.LongRunningService;
 import org.coderthoughts.cloud.demo.api.TestService;
@@ -40,6 +41,7 @@ public class MyServlet extends HttpServlet {
     private final List<ServiceReference> frameworkRefs = new CopyOnWriteArrayList<ServiceReference>();
     private final List<ServiceReference> testServicesRefs = new CopyOnWriteArrayList<ServiceReference>();
     private final List<ServiceReference> longRunningServiceRefs = new CopyOnWriteArrayList<ServiceReference>();
+    private final List<ServiceReference> metadataProvidersRefs = new CopyOnWriteArrayList<ServiceReference>();
 
     MyServlet(BundleContext context) {
         bundleContext = context;
@@ -47,6 +49,7 @@ public class MyServlet extends HttpServlet {
         openServiceTracker(context, FrameworkNodeStatus.class, frameworkRefs);
         openServiceTracker(context, TestService.class, testServicesRefs);
         openServiceTracker(context, LongRunningService.class, longRunningServiceRefs);
+        openServiceTracker(context, RemoteServiceMetadataProvider.class, metadataProvidersRefs);
     }
 
     private ServiceTracker openServiceTracker(BundleContext context, Class<?> cls, final List<ServiceReference> refs) {
@@ -134,11 +137,26 @@ public class MyServlet extends HttpServlet {
     }
 
     private void printTestServices(PrintWriter out, int invocationCount) {
+        for (ServiceReference rsmp : metadataProvidersRefs) {
+            out.println("<H3>RemoteServiceMetadataProvider</H3><ul>");
+            for (String key : rsmp.getPropertyKeys()) {
+                Object val = rsmp.getProperty(key);
+                if (val instanceof Object[]) {
+                    val = Arrays.toString((Object[]) val);
+                }
+                out.println("<li>" + key + " = " + val + "</li>");
+            }
+            out.println("</ul>");
+        }
+
+
+
         out.println("<H2>TestService invocation</H2><small><ul>");
 
         for (int i=0; i < invocationCount; i++) {
             for (ServiceReference ref : testServicesRefs) {
                 try {
+                    /*
                     Object mdh = ref.getProperty("service.imported.metadata");
                     if (mdh instanceof RemoteServiceMetadataProvider) {
                         RemoteServiceMetadataProvider handler = (RemoteServiceMetadataProvider) mdh;
@@ -154,6 +172,41 @@ public class MyServlet extends HttpServlet {
                     }
                     out.println("<li>TestService ");
 
+                    String filter = "(&(objectClass=" + CXFRemoteServiceMetadataHandler.class.getName() +
+                            ")(" + RemoteConstants.ENDPOINT_FRAMEWORK_UUID + "=" +
+                            ref.getProperty(RemoteConstants.ENDPOINT_FRAMEWORK_UUID) + "))";
+                    System.out.println("@@@ Looking for a service: " + filter);
+                    ServiceReference[] rsmRefs = bundleContext.getServiceReferences(null, filter);
+                    System.out.println("@@@ Found: " + Arrays.toString(rsmRefs));
+                    out.println("<H3>CXFRemoteServiceMetadataHandler</H3><ul>");
+                    if (rsmRefs != null && rsmRefs.length > 0) {
+                        ServiceReference rsmp = rsmRefs[0];
+                        for (String key : rsmp.getPropertyKeys()) {
+                            Object val = rsmp.getProperty(key);
+                            if (val instanceof Object[]) {
+                                val = Arrays.toString((Object[]) val);
+                            }
+                            out.println("<li>" + key + " = " + val + "</li>");
+                        }
+                    }
+                    out.println("</ul>");
+                    */
+
+                    RemoteServiceMetadataProvider rsmp = (RemoteServiceMetadataProvider) bundleContext.getService(metadataProvidersRefs.get(0));
+                    RemoteServiceMetadata md = rsmp.getMetadata(ref);
+                    if (md != null) {
+                        out.println("<li>Service Variables: " );
+                        out.println(Arrays.toString(md.listVariablesNames()));
+                        out.println("</li>");
+                        out.println("<li>remaining.invocations: " );
+                        out.println(md.getVariable("remaining.invocations"));
+                        out.println("</li>");
+                        out.println("<li>all service variables: " );
+                        out.println(md.getVariables(".*"));
+                        out.println("</li>");
+                    }
+
+                    out.println("<li>TestService ");
                     TestService svc = (TestService) bundleContext.getService(ref);
                     out.println("Result: " + svc.doit() + "</li>");
                     bundleContext.ungetService(ref);

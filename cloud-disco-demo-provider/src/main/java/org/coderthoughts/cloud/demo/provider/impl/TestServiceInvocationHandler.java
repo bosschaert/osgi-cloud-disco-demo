@@ -42,14 +42,25 @@ public class TestServiceInvocationHandler implements RemoteServiceInvocationHand
 
     @Override
     public String[] listServiceVariableNames(ClientContext client) {
-        return new String [] {"remaining.invocations"};
+        return new String [] {"remaining.invocations", "service.status"};
     }
 
     @Override
     public String getServiceVariable(ClientContext client, String name) {
+        AtomicInteger count = getCount(client.getHostIPAddress());
         if ("remaining.invocations".equals(name)) {
-            AtomicInteger count = getCount(client.getHostIPAddress());
             return "" + (MAX_INVOCATIONS - count.get());
+        }
+        if ("service.status".equals(name)) {
+            System.out.println("@@@ Obtaining service.status: " + count.get());
+            int i = count.get();
+            if (i >= MAX_INVOCATIONS) {
+                return "ERROR";
+            } else if (i > MAX_INVOCATIONS - 3) {
+                return "WARNING";
+            } else {
+                return "OK";
+            }
         }
 
         throw new IllegalArgumentException(name);
